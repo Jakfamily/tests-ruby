@@ -1,52 +1,47 @@
 def translate(phrase)
-  # Divise la phrase en mots
+  # divise la phrase en mots individuels et les stocke dans un tableau
   words = phrase.split(" ")
+  # stocke les voyelles dans un tableau pour une vérification ultérieure
+  vowels = ["a", "e", "i", "o", "u"]
+  # stocke les résultats de la traduction
+  result = []
 
-  # Initialise une liste vide pour stocker les mots traduits
-  translated_words = []
-
-  # Pour chaque mot dans la liste de mots
+  # boucle à travers chaque mot dans le tableau des mots
   words.each do |word|
-    # Récupère la première lettre et le reste du mot
-    first_letter = word[0]
-    rest_of_word = word[1..-1]
-
-    # Si le mot commence par une voyelle, ajoute "ay" à la fin
-    if ["a", "e", "i", "o", "u"].include?(first_letter.downcase)
-      translated_word = word + "ay"
+    # le mot commence par une voyelle
+    if vowels.include?(word[0].downcase)
+      # ajoute le mot suivi de "ay" au résultat
+      result << "#{word}ay"
+    # le mot commence par un groupe de consonnes
     else
-      # Sinon, recherche la première voyelle dans le mot
-      vowel_index = word.index(/[aeiou]/)
-
-      # Si le mot contient "qu", considère "qu" comme une consonne et trouve la prochaine voyelle après "qu"
-      if word.include?("qu")
-        vowel_index = word.index(/[aeiou]/, word.index("qu") + 2)
+      # initialise un compteur pour la position de la première voyelle
+      i = 0
+      # tant que nous n'avons pas atteint la fin du mot et que nous ne sommes pas tombés sur une voyelle
+      while i < word.length && !vowels.include?(word[i])
+        # traite "qu" comme un phonème unique
+        if (word[i] == "q" && word[i+1] == "u")
+          i += 2
+        else
+          i += 1
+        end
       end
-
-      # Sépare le mot en consonnes avant la première voyelle et le reste du mot
-      consonants = word.slice(0..vowel_index-1)
-      rest_of_word = word.slice(vowel_index..-1)
-
-      # Ajoute "ay" à la fin et combine les parties dans le nouveau mot traduit
-      translated_word = rest_of_word + consonants + "ay"
+      # ajoute le mot, avec les consonnes initiales déplacées à la fin et suivi de "ay", au résultat
+      result << "#{word[i..-1]}#{word[0...i]}ay"
     end
-
-    # Si le mot original était en majuscules, met également en majuscules le premier caractère du mot traduit
-    if word == word.capitalize
-      translated_word = translated_word.capitalize
-    end
-
-    # Ajoute le mot traduit à la liste de mots traduits
-    translated_words << translated_word
   end
 
-  # Combine les mots traduits en une seule phrase et retourne la phrase traduite
-  translated_phrase = translated_words.join(" ")
-
-  # Ajoute la ponctuation à la fin de la phrase traduite si elle est présente dans la phrase d'origine
-  if phrase.match?(/[.!?]$/)
-    translated_phrase += phrase[-1]
+  # gère la capitalisation et la ponctuation
+  for i in 0...result.length
+    # gère la capitalisation
+    if words[i] == words[i].capitalize
+      result[i] = result[i].capitalize
+    end
+    # gère la ponctuation
+    if words[i][-1].match(/\p{P}/)
+      result[i][-2], result[i][-1] = result[i][-1], result[i][-2]
+    end
   end
 
-  return translated_phrase
+  # renvoie le résultat sous forme de chaîne unique avec des espaces entre chaque mot
+  return result.join(" ")
 end
