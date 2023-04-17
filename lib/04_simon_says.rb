@@ -8,10 +8,20 @@ def shout(str)
 end
 # methode shout prend str en entree et renvoie str en maj en sortie 
 
-def repeat(hello, n)
-    return (hello + " ") * n
-end
-
+def repeat(str, n=2)
+    # Initialise une variable qui va contenir la chaîne de caractères répétée
+    repeated_str = ""
+  
+    # Répète la chaîne de caractères n fois, en les séparant par des espaces
+    n.times do
+      repeated_str += str + " "
+    end
+  
+    # Supprime l'espace en trop à la fin de la chaîne de caractères répétée
+    repeated_str.strip
+  end
+  
+  
 def start_of_word(str, n)
     return str[0,n]
 end
